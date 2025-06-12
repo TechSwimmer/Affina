@@ -27,7 +27,12 @@ const userSchema = new mongoose.Schema({
     // Optional avatar image URL or Cloudinary path
     avatar: {
         type: String
-    }
+    },
+    // followers for specific user
+    followers:[{ type:mongoose.Schema.Types.ObjectId, ref: "User" }],
+    following:[{ type:mongoose.Schema.Types.ObjectId, ref: "User"}],
+
+
 },{
     // Adds createdAt and updatedAt fields automatically
     timestamps: true

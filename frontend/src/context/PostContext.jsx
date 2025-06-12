@@ -1,24 +1,30 @@
+// Import required libraries and contexts
 import axios from 'axios'
 import cookie from 'js-cookie'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { AuthContext } from './AuthContext'
+import { AuthContext } from './AuthContext'       // Import required libraries and contexts
 
 
+// Import required libraries and contexts
 export const PostContext = createContext()
 
-const PostContextProvider = ({children}) => {
+const PostContextProvider = ({children}) => {      
 
     const navigate = useNavigate();
 
-    const {backendUrl, token} = useContext(AuthContext) 
+    const {backendUrl, token} = useContext(AuthContext)  // Get base URL and token from AuthContext
 
-    const [allPosts, setAllPosts] = useState([])
-    const [userPosts, setUserPosts] = useState([])
- 
+
+    // State to store posts
+    const [allPosts, setAllPosts] = useState([])          // All public posts
+    const [userPosts, setUserPosts] = useState([])        // Posts created by logged-in user
+    
+    // Token from cookies
     const utoken = cookie.get("token")
 
+    // Fetch all posts (public feed)
     const fetchAllPosts = async () => {
         try{
             const {data} = await axios.get(`${backendUrl}/api/posts/get-posts`)
@@ -31,6 +37,7 @@ const PostContextProvider = ({children}) => {
         }
     }
 
+    // Fetch posts of currently logged-in user
     const fetchPostsOfLoginUser = async() => {
         const utoken = cookie.get("token");
         console.log("UTOKEN:", utoken);
@@ -57,9 +64,10 @@ const PostContextProvider = ({children}) => {
         }
     }
 
-    const likePosts = async (postId) => {
+    // Like a post (⚠️ BUG: postId is passed, but you're using undefined `id`)
+    const likePosts = async (id) => {
         try{
-            const {data} = await axios.put(`${backendUrl}/api/posts/post/${id}/like`,{},{
+            const {data} = await axios.put(`${backendUrl}/api/posts/${id}/like`,{},{
                 headers: {
                     Authorization:`Bearer ${utoken}`
                 }
@@ -67,17 +75,21 @@ const PostContextProvider = ({children}) => {
             if(data.success){
                 toast.success(data.message)
                 fetchAllPosts()
-            }
+            
         }
+    }
         catch(error){
             toast.error(error.message)
         }
     } 
 
-
+     // Comment on a post 
     const postsComment = async(id, text) => {
         try{
-            const {data} = await axios.post()(`${backendUrl}/api/posts/${id}/comment`,{text},{
+            console.log(id)
+            console.log(text)
+            
+            const {data} = await axios.post(`${backendUrl}/api/posts/${id}/comment`,{text},{
                 headers: {
                     Authorization:`Bearer ${utoken}`
                 }
@@ -92,6 +104,7 @@ const PostContextProvider = ({children}) => {
         }
     }
 
+    // Create a new post (text + optional image)
     const createPost = async (text,image) => {
         const utoken = cookie.get("token")
         console.log("UTOKEN:", utoken)
@@ -109,8 +122,8 @@ const PostContextProvider = ({children}) => {
             })
             if(data.success){
                 toast.success(data.message)
-                fetchPostsOfLoginUser()
-                navigate('/posts')
+                fetchPostsOfLoginUser()     // Refresh user posts
+                navigate('/posts')          // Redirect to posts page
             }
         }
         catch(error) {
@@ -118,6 +131,7 @@ const PostContextProvider = ({children}) => {
         }
     } 
 
+    // Delete a post by ID
     const deletePost = async (id) => {
         try{
             const { data } = await axios.delete(`${backendUrl}/api/posts/${id}`,{
@@ -128,7 +142,7 @@ const PostContextProvider = ({children}) => {
             if(data.success){
                 toast.success(data.message)
                 fetchPostsOfLoginUser()
-                fetchAllPosts()
+                // fetchAllPosts()
                 navigate('/posts')
             }
         }
@@ -141,7 +155,7 @@ const PostContextProvider = ({children}) => {
     
 
 
-    
+    // On initial load, fetch all posts and user posts if logged in
     useEffect(() => {
         if(token){
             fetchAllPosts()
@@ -152,7 +166,7 @@ const PostContextProvider = ({children}) => {
     }, [])
 
 
-
+    // Values provided to any component that consumes this context
     const values = {
         fetchAllPosts,
         fetchPostsOfLoginUser,

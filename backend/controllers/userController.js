@@ -16,9 +16,17 @@ const register = async (req, res) => {
         if (!username || !email || !password) {
             return res.status(401).json({ success: false, message: 'All fields are required' })
         }
-
+         
         // Get avatar file path if uploaded
         const avatarDP = req.file?.path;
+
+
+        // console statements to check for errors related to the avatar
+        console.log("Avatar file info from Cloudinary:", avatarDP);
+        console.log("req.body:", req.body);     // Should include username, email, etc.
+        console.log("req.file:", req.file);     // Should show uploaded image info
+
+
 
         // Avatar is mandatory during registration
         if (!avatarDP) {

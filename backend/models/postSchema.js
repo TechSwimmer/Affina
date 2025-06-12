@@ -23,7 +23,7 @@ const postSchema = new mongoose.Schema({
     // Array of users who liked the post (stored as ObjectIds referencing the User model)
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: User,
+        ref: 'User',
 
     }],
 

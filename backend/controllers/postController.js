@@ -33,8 +33,12 @@ const createPost = async (req, res) => {
 
 const getPosts = async (req, res) => {
     try{
-        const posts = await postModel.find().populate('user', 'username avatar').sort({createdAt: -1}); 
-
+        const posts = await postModel.find()
+        .populate('user', 'username avatar')                 // post creator
+        .populate('likes', 'username avatar')                
+        .populate('comments.user','username avatar')         // comment creator
+        .sort({createdAt: -1}); 
+        // console.log(posts[0].comments);
         res.status(200).json({success:true, message:"Posts fetched successfully", posts})   
     }
     catch(error){
@@ -170,10 +174,14 @@ const toggleLike = async (req, res) => {
             post.likes.push(userId);
         }
         await post.save()
+
+        const populatedPost = await postModel.findById(postId).populate('likes',  'username avatar').populate('user', 'username avatar');
+
         res.status(200).json({
             success: true,
             message:alreadyLiked?"Post Unliked":"Post Liked",
-            likes:post.likes.length
+            likes:populatedPost.likes        // full array of liked user objects
+            
         })
     }
     catch(error) {

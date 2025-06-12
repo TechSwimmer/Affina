@@ -19,7 +19,7 @@ const storage = new CloudinaryStorage({
     cloudinary:cloudinary,
     params:{
         folder:'Affina',                               // Folder name in Cloudinary where files will be stored
-        allowed_format:['jpg,jpeg','png', 'mp4','mov'] // Allowed file types
+        allowed_formats:['jpg','jpeg','png', 'mp4','mov'] // Allowed file types
     }
 })
 

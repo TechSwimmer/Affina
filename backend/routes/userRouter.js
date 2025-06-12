@@ -4,7 +4,8 @@
 import express from "express";
 import { register, login, me } from "../controllers/userController.js";
 import  protect  from "../middlewares/auth.js";                // Middleware to protect routes (requires JWT)
-import upload from "../middlewares/multer.js";                 // Middleware to handle image uploads to cloudinary
+import upload from "../middlewares/multer.js"; 
+                // Middleware to handle image uploads to cloudinary
 
 
 const userRouter = express.Router();
@@ -32,6 +33,12 @@ userRouter.post('/login', login)
  */
 userRouter.get('/me',protect, me)
 
+
+/**
+ * @route   POST /me
+ * @desc    follow a user
+ * @access  Protected
+ */
 
 // Export the router to be used in the main server file
 export default userRouter;  

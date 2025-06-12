@@ -57,14 +57,14 @@ postRouter.delete('/:id', protect, deletePost);
  * @desc    Like or unlike a post by ID
  * @access  Protected (requires login)
  */
-postRouter.put('/posts/:id/like', protect, toggleLike);
+postRouter.put('/:id/like', protect, toggleLike);
 
 /**
  * @route   PUT /posts/:id/comment
  * @desc    Add a comment to a post by ID
  * @access  Protected (requires login)
  */
-postRouter.put('/posts/:id/comment', protect, addComment);
+postRouter.post('/:id/comment', protect, addComment);
 
 // Export the router to be used in the main server file
 export default postRouter;

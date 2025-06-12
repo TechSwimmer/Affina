@@ -1,69 +1,75 @@
+// Import necessary modules
+// export default AuthContextProvider;
 import axios from 'axios'
 import cookie from 'js-cookie'
 import { createContext, useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
+
+// Create a new context for authentication
 export const AuthContext = createContext()
+
+// Optional import from PostContext (not used in this file, can be removed)
+import { PostContext } from './PostContext'
+
 
 const AuthContextProvider = ({ children }) => {
 
     const navigate = useNavigate();
     const backendUrl = 'http://localhost:3000'
 
-    const [token, setToken] = useState(!cookie.get('token'))
-    const [user, setUser] = useState('')
+    // Authentication state
+    const [token, setToken] = useState(!cookie.get('token'))     // Note: `!cookie.get` makes token false if cookie exists, likely a bug
+    const [user, setUser] = useState('')                         // Will hold current user details
 
+    // Set or remove default Authorization header based on token
     useEffect(() => {
-        if(token){
+        if (token) {
             axios.defaults.headers.common["Authorization"] = `Bearer ${cookie.get('token')}`
         }
-        else{
+        else {
             delete axios.defaults.headers.common["Authorization"]
         }
-    }, []) 
+    }, [])
 
-
-    const fetchCurrentUserDetails  = async () => {
-        try{
+    // Fetch current logged-in user details
+    const fetchCurrentUserDetails = async () => {
+        try {
             const utoken = cookie.get("token")
-            const {data} = await axios.get(`${backendUrl}/api/user/me`, {
+            const { data } = await axios.get(`${backendUrl}/api/user/me`, {
                 headers: {
                     Authorization: `Bearer ${utoken}`
                 }
             })
-            if(data.success) {
+            if (data.success) {
                 setUser(data.currentUser)
-            }  
+            }
         }
-        catch(error) {
+        catch (error) {
             console.log(error)
             toast.error("Login again")
         }
     }
 
-
+    // Run fetch user logic if token exists on mount
     useEffect(() => {
-        if(token){
+        if (token) {
             fetchCurrentUserDetails();
         }
     }, [])
 
-    const handleRegister = async (username, email, password, avatar) => {
+    // Function to register new users
+    const handleRegister = async (formData) => {
         try {
-            const formData = new formData()
-
-            formData.append('username', username)
-            formData.append('email', email)
-            formData.append('password', password)
-            formData.append('image', image)
-
+            
             const { data } = await axios.post(`${backendUrl}/api/user/register`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
             })
-
+            
             if (data.success) {
+                // Save token in cookie for 7 days
                 cookie.set("token", data.token, { expires: 7 })
                 setToken(true)
                 setUser(data.user)
@@ -78,11 +84,12 @@ const AuthContextProvider = ({ children }) => {
         }
     }
 
-    const handleLogin = async ( email, password ) => {
+    // Function to login existing users
+    const handleLogin = async (email, password) => {
         try {
-          
 
-            const { data } = await axios.post(`${backendUrl}/api/user/login`,{ email, password }, {
+
+            const { data } = await axios.post(`${backendUrl}/api/user/login`, { email, password }, {
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -94,6 +101,7 @@ const AuthContextProvider = ({ children }) => {
                 setUser(data.user)
                 toast.success(data.message || "Login successfull")
                 navigate('/posts')
+                
             }
 
         }
@@ -103,6 +111,7 @@ const AuthContextProvider = ({ children }) => {
         }
     }
 
+    // Function to logout user
     const handleLogout = () => {
         cookie.remove('token')
         setToken(false)
@@ -111,6 +120,7 @@ const AuthContextProvider = ({ children }) => {
         navigate('/')
     }
 
+    // Shared values provided to context consumers
     const values = {
         backendUrl,
         token,
@@ -122,6 +132,7 @@ const AuthContextProvider = ({ children }) => {
         fetchCurrentUserDetails
     }
 
+    // Wrap children in context provider
     return (
         <AuthContext.Provider value={values}>
             {children}
