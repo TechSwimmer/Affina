@@ -2,7 +2,7 @@
 // This file defines user-related routes such as registration, login, and fetching current user info
 
 import express from "express";
-import { register, login, me } from "../controllers/userController.js";
+import { register, login, me, follow, unfollow } from "../controllers/userController.js";
 import  protect  from "../middlewares/auth.js";                // Middleware to protect routes (requires JWT)
 import upload from "../middlewares/multer.js"; 
                 // Middleware to handle image uploads to cloudinary
@@ -35,10 +35,21 @@ userRouter.get('/me',protect, me)
 
 
 /**
- * @route   POST /me
+ * @route   POST /:id/follow
  * @desc    follow a user
  * @access  Protected
  */
+
+userRouter.post('/:id/follow',protect, follow)
+
+
+/**
+ * @route   POST /:id/unfollow
+ * @desc    unfollow a user
+ * @access  Protected
+ */
+
+userRouter.post('/:id/unfollow',protect, unfollow)
 
 // Export the router to be used in the main server file
 export default userRouter;  

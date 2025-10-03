@@ -16,7 +16,7 @@ const register = async (req, res) => {
         if (!username || !email || !password) {
             return res.status(401).json({ success: false, message: 'All fields are required' })
         }
-         
+
         // Get avatar file path if uploaded
         const avatarDP = req.file?.path;
 
@@ -154,5 +154,72 @@ const me = async (req, res) => {
     }
 }
 
+
+
+
+// follow a user
+
+const follow = async (req, res) => {
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    if (id == userId) return res.status(400).json({ msg: "Cannot follow yourself" });
+
+    const userToFollow = await User.findById(id)
+    const currentUser = await User.findById(userId);
+
+    if (!userToFollow.followers.includes(userId)) {
+        userToFollow.followers.push(userId);
+        currentUser.following.push(id);
+
+        await userToFollow.save();
+        await currentUser.save();
+
+        res.status(200).json({ msg: " User followed" })
+    }
+    else {
+        res.status(400).json({ msg: "Already following this user" })
+    }
+
+}
+
+
+
+// unfollow a user
+
+const unfollow = async (req, res) => {
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    if (id == userId) return res.status(400).json({ msg: "Cannot unfollow yourself" });
+    try {
+        const userToUnFollow = await User.findById(id)
+        const currentUser = await User.findById(userId);
+
+        if (!userToUnFollow.followers.includes(userId)) {
+
+            res.status(200).json({ msg: "You do not follow this user" })
+        }
+        userToUnFollow.followers = userToUnFollow.followers.filter(
+            (followerId) => followerId.toString() !== userId
+        );
+
+        currentUser.following = currentUser.following.filter(
+            (followingId) => followingId.toString() !== id
+        );
+
+        await userToUnFollow.save()
+        await currentUser.save()
+
+        res.status(200).json({ msg: "User unfollowed"})
+
+    }
+    catch (error) {
+        console.error("Unfollow error:", err);
+        res.status(500).json({ msg: "Server error"})
+    }
+
+}
+
 // Export user controller functions
-export { register, login, me };
+export { register, login, me, follow, unfollow };
