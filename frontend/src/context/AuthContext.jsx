@@ -16,7 +16,7 @@ import { PostContext } from './PostContext'
 const AuthContextProvider = ({ children }) => {
 
     const navigate = useNavigate();
-    const backendUrl = 'http://localhost:3000'
+    const backendUrl = import.meta.env.VITE_API_BASE_URL;
 
     // Authentication state
     const [token, setToken] = useState(!cookie.get('token'))     // Note: `!cookie.get` makes token false if cookie exists, likely a bug
