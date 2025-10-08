@@ -19,6 +19,10 @@ const PORT = process.env.PORT || 4000;
 // Connect to MongoDB
 connectDB();
 
+// just for test  
+// import expressListEndpoints from "express-list-endpoints";
+// app._router && console.log(expressListEndpoints(app));
+
 // Enable CORS for cross-origin requests (frontend-backend communication)
 app.use(
   cors({
