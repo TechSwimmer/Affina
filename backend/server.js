@@ -19,11 +19,26 @@ const PORT = process.env.PORT || 4000;
 // Connect to MongoDB
 connectDB();
 
+// Enable CORS for cross-origin requests (frontend-backend communication)
+app.use(
+  cors({
+    origin: "https://affina.netlify.app",  // your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
+
+// ✅ Handle preflight (OPTIONS) requests globally
+app.options("*", cors());
+
 // Middleware to parse cookies from client requests
 app.use(cookieParser());
 
-// Enable CORS for cross-origin requests (frontend-backend communication)
-app.use(cors());
+
+
+
+
 
 
 // Route handlers
