@@ -48,7 +48,7 @@ const LandingPage = () => {
             {/* Left Section - Branding Image */}
             <div className="md:flex md:w-1/2 items-center justify-center">
                 <TiltCard scaleFactor={1.25}>
-                    <h1 className="ml-6">Unified Mentor Socialis</h1>
+                    <h1 className="ml-6">Affina</h1>
                     <img
                         src={image}
                         alt="Logo"

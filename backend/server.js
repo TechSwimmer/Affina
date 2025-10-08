@@ -34,7 +34,7 @@ app.use(
 
 
 // ✅ Handle preflight (OPTIONS) requests globally
-app.options("*", cors());
+app.options(/.*/, cors());;
 
 // Middleware to parse cookies from client requests
 app.use(cookieParser());
