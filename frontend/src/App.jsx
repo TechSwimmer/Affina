@@ -34,7 +34,7 @@ function App() {
             <Route path = '/posts' element = {<PostPage />}/>
 
             {/* Posts page showing all posts */}
-            <Route path = '/' element = {<Navigate to="/" />} />
+            <Route path = '/' element = {<LandingPage/>} />
 
             {/* Page to create a new post */}
             <Route path = '/create-post' element = {<AddPost/>} />
